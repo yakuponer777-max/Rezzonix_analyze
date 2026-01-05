@@ -1,11 +1,8 @@
-from flask import Flask, render_template_string, request, redirect, url_for
-import math
+from flask import Flask, render_template_string, request
+import os
 
 app = Flask(__name__)
 
-# -------------------------------
-# ÖRNEK FREKANS & HASTALIK VERİLERİ
-# -------------------------------
 FREQUENCIES = {
     "Baş Ağrısı": [7.83, 10.5, 14.1],
     "Mide Problemleri": [3.5, 5.2, 8.0],
@@ -14,9 +11,6 @@ FREQUENCIES = {
     "Bağışıklık Zayıflığı": [15.5, 18.2, 21.0]
 }
 
-# -------------------------------
-# ANA SAYFA
-# -------------------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
@@ -27,13 +21,14 @@ def index():
         result = FREQUENCIES.get(selected)
 
     html = """
+    <!doctype html>
     <html>
     <head>
         <title>Rezzonix Analyzer</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-            body { font-family: Arial; background:#f5f7fa; padding:20px; }
-            .card { background:white; padding:20px; border-radius:10px; max-width:600px; margin:auto; }
+            body { font-family: Arial; background:#f4f6f8; padding:20px; }
+            .card { background:white; padding:20px; border-radius:12px; max-width:600px; margin:auto; }
             h1 { text-align:center; }
             select, button { width:100%; padding:12px; margin-top:10px; font-size:16px; }
             .result { margin-top:20px; background:#eef; padding:15px; border-radius:8px; }
@@ -43,9 +38,8 @@ def index():
         <div class="card">
             <h1>🔬 Rezzonix Sağlık Analyzer</h1>
             <form method="post">
-                <label>Analiz edilecek durumu seçin:</label>
                 <select name="problem" required>
-                    <option value="">Seçiniz</option>
+                    <option value="">Analiz edilecek durumu seçin</option>
                     {% for p in problems %}
                     <option value="{{p}}" {% if p==selected %}selected{% endif %}>{{p}}</option>
                     {% endfor %}
@@ -61,7 +55,7 @@ def index():
                     <li>{{f}} Hz</li>
                     {% endfor %}
                 </ul>
-                <p><b>Uygulama Önerisi:</b> Frekanslar günde 15–20 dk, sakin ortamda uygulanmalıdır.</p>
+                <p><b>Uygulama önerisi:</b> Günde 15–20 dk, sakin ortamda.</p>
             </div>
             {% endif %}
         </div>
@@ -76,8 +70,6 @@ def index():
         selected=selected
     )
 
-# -------------------------------
-# UYGULAMA BAŞLAT
-# -------------------------------
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
